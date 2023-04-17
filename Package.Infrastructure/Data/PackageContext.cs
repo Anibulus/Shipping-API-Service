@@ -1,5 +1,5 @@
-﻿namespace Package.Infraestructure;
-public class Class1
+﻿namespace Package.Infrastructure.Data;
+public class PackageContext
 {
 
 }

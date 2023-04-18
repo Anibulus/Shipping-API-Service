@@ -1,10 +1,18 @@
-﻿using Package.Infrastructure.Interfaces;
+﻿using System.Web;
+using Package.Infrastructure.Interfaces;
+using static Package.Infrastructure.DTO.DHL.Rate;
 
 namespace Package.Infrastructure.Services;
 
 public class DHL : IDHL
 {
-    string SINGLE_RATE = "/rates"; //GET
+    private readonly string URL;
+    private readonly HttpClient _client;
+    public DHL()
+    {
+        this.URL = Environment.GetEnvironmentVariable("DHL_URL") ?? "";
+        this._client = new HttpClient();
+    }
 
     public void CancelPickup(string dispatchConfirmationNumber)
     {
@@ -32,13 +40,38 @@ public class DHL : IDHL
     }
 
     //TODO Conectar todas las variables para la cotizacion
-    public async Task Rate()
+    public async Task<Root?> Rate()
     {
-        var client = new HttpClient();
+        Root? root = null;
+        string uri = $@"{this.URL}/rates";
+        var builder = new UriBuilder(uri);
+        var query = HttpUtility.ParseQueryString(builder.Query);
+        query["accountNumber"] = "123456789";
+        query["originCountryCode"] = "CZ";
+        query["originPostalCode"] = "14800";
+        query["originCityName"] = "Prague";
+        query["destinationCountryCode"] = "CZ";
+        query["destinationPostalCode"] = "14800";
+        query["destinationCityName"] = "Prague";
+        query["weight"] = "5";
+        query["length"] = "15";
+        query["width"] = "10";
+        query["height"] = "5";
+        query["plannedShippingDate"] = "2020-02-26";
+        query["isCustomsDeclarable"] = "false";
+        query["unitOfMeasurement"] = "metric";
+        query["nextBusinessDay"] = "false";
+        query["strictValidation"] = "false";
+        query["getAllValueAddedServices"] = "false";
+        query["requestEstimatedDeliveryDate"] = "true";
+        query["estimatedDeliveryDateType"] = "QDDF";
+        builder.Query = query.ToString();
+        uri = builder.ToString();
+
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Get,
-            RequestUri = new Uri("https://api-mock.dhl.com/mydhlapi/rates?accountNumber=123456789&originCountryCode=CZ&originPostalCode=14800&originCityName=Prague&destinationCountryCode=CZ&destinationPostalCode=14800&destinationCityName=Prague&weight=5&length=15&width=10&height=5&plannedShippingDate=2020-02-26&isCustomsDeclarable=false&unitOfMeasurement=metric&nextBusinessDay=false&strictValidation=false&getAllValueAddedServices=false&requestEstimatedDeliveryDate=true&estimatedDeliveryDateType=QDDF"),
+            RequestUri = new Uri(uri),
             //Definition RequestUri = new Uri("https://api-mock.dhl.com/mydhlapi/rates?accountNumber=SOME_STRING_VALUE&originCountryCode=SOME_STRING_VALUE&originCityName=SOME_STRING_VALUE&destinationCountryCode=SOME_STRING_VALUE&destinationCityName=SOME_STRING_VALUE&weight=SOME_NUMBER_VALUE&length=SOME_NUMBER_VALUE&width=SOME_NUMBER_VALUE&height=SOME_NUMBER_VALUE&plannedShippingDate=SOME_STRING_VALUE&isCustomsDeclarable=SOME_BOOLEAN_VALUE&unitOfMeasurement=SOME_STRING_VALUE"),
             Headers =
             {
@@ -53,13 +86,15 @@ public class DHL : IDHL
                 { "Authorization", "Basic ZGVtby1rZXk6ZGVtby1zZWNyZXQ=" },
             },
         };
-        using (var response = await client.SendAsync(request))
+        using (var response = await _client.SendAsync(request))
         {
             response.EnsureSuccessStatusCode();
             var body = await response.Content.ReadAsStringAsync();
             Console.WriteLine("Response:");
             Console.WriteLine(body);
+            root = System.Text.Json.JsonSerializer.Deserialize<Root>(body);
         }
+        return root;
     }
 
     public void Rates()

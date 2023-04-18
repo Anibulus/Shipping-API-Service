@@ -1,3 +1,5 @@
+using static Package.Infrastructure.DTO.DHL.Rate;
+
 namespace Package.Infrastructure.Interfaces;
 public interface IDHL
 {
@@ -5,7 +7,7 @@ public interface IDHL
     ///<summary>
     /// Retrieve Rates for Multi-piece Shipments
     ///</summary>
-    Task Rate();
+    Task<Root?> Rate();
 
     ///<summary>
     /// Retrieve Rates for Multi-piece Shipments

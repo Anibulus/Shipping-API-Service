@@ -11,4 +11,9 @@ Para visualizar la documentacion autogenerada es con este path:
 `/Swagger/index.html`
 
 
-TODO .csproj buscar como mas se configura
+
+.env Values 
+```
+DHL_URL
+ENV_APP
+```

@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Package.Infrastructure.Interfaces;
+using Package.Infrastructure.Request;
+using static Package.Infrastructure.DTO.DHL.Rate;
 
 namespace Package.Api.Controllers;
 
@@ -7,7 +9,7 @@ namespace Package.Api.Controllers;
 [Route("/Shipment")]
 public class ShipmentController : ControllerBase
 {
-    private readonly IDHL  _dhl;
+    private readonly IDHL _dhl;
     private readonly ILogger<ShipmentController> _logger;
 
     public ShipmentController(ILogger<ShipmentController> logger, IDHL dhl)
@@ -16,18 +18,12 @@ public class ShipmentController : ControllerBase
         _dhl = dhl;
     }
 
-    [HttpGet(Name = "Rating")]
-    public async Task<IEnumerable<string>> Get()
+
+    [HttpPost(Name = "CreateShipment")]
+    public async Task<IEnumerable<string>> Post(ShipmentRequest shipment)
     {
-        await _dhl.Rate();
+        await _dhl.CreateShipment(shipment);
         Console.WriteLine("Ya hice el llamado a la api");
-       return new List<string>();
-    }
-    [HttpPost(Name = "Shipment")]
-    public async Task<IEnumerable<string>> Post()
-    {
-        await _dhl.Rate();
-        Console.WriteLine("Ya hice el llamado a la api");
-       return new List<string>();
+        return new List<string>();
     }
 }

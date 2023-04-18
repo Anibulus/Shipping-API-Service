@@ -1,13 +1,15 @@
+using Package.Infrastructure.Request;
 using static Package.Infrastructure.DTO.DHL.Rate;
 
 namespace Package.Infrastructure.Interfaces;
+
 public interface IDHL
 {
     #region Rating
     ///<summary>
     /// Retrieve Rates for Multi-piece Shipments
     ///</summary>
-    Task<Root?> Rate();
+    Task<Root?> Rate(RateRequest rateRequest);
 
     ///<summary>
     /// Retrieve Rates for Multi-piece Shipments
@@ -39,7 +41,7 @@ public interface IDHL
     ///<summary>
     /// Create Shipment
     ///</summary>
-    void CreateShipment(string shipmentTrackingNumber);
+    Task CreateShipment(ShipmentRequest shipmentRequest);
 
     ///<summary>
     /// Upload Commercial Invoice data for your DHL Express shipment
@@ -71,12 +73,12 @@ public interface IDHL
     ///<summary>
     /// Update pickup information for an existing DHL Express pickup booking request
     ///</summary>
-    void UpdatePackage(string dispatchConfirmationNumber);
+    void UpdatePickup(string dispatchConfirmationNumber);
 
     ///<summary>
     /// Create a DHL Express pickup booking request
     ///</summary>
-    void CreatePackage();
+    void CreatePickup();
     #endregion
     #region Identifier
     ///<summary>

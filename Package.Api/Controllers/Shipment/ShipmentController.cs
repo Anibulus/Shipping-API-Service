@@ -23,7 +23,6 @@ public class ShipmentController : ControllerBase
     public async Task<IEnumerable<string>> Post(ShipmentRequest shipment)
     {
         await _dhl.CreateShipment(shipment);
-        Console.WriteLine("Ya hice el llamado a la api");
         return new List<string>();
     }
 }
